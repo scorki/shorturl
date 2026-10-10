@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="快速、簡單地建立可分享的短網址。">
+  <title>短網址產生器</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      color: #172033;
+      background: #f5f7fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px 18px;
+      background:
+        radial-gradient(ellipse at 12% 12%, #e7edff 0, transparent 35%),
+        radial-gradient(ellipse at 92% 88%, #e4f7f2 0, transparent 32%),
+        #f5f7fb;
+    }
+
+    main {
+      width: min(100%, 600px);
+      padding: 42px;
+      border: 1px solid #e8ebf2;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .94);
+      box-shadow: 0 24px 70px rgba(33, 48, 86, .10);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 30px;
+      color: #3848bf;
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 13px;
+      background: #eef0ff;
+      font-size: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(29px, 6vw, 38px);
+      letter-spacing: -.04em;
+    }
+
+    .intro {
+      margin: 12px 0 30px;
+      color: #687188;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .url-input {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 16px;
+      border: 1px solid #dce1eb;
+      border-radius: 12px;
+      outline: none;
+      color: #172033;
+      background: #fff;
+      font: inherit;
+      transition: border-color .18s, box-shadow .18s;
+    }
+
+    .url-input::placeholder { color: #a3aabc; }
+    .url-input:focus {
+      border-color: #5968df;
+      box-shadow: 0 0 0 4px rgba(89, 104, 223, .12);
+    }
+
+    .hint {
+      margin: 9px 0 20px;
+      color: #788198;
+      font-size: 12px;
+    }
+
+    button, .open-link {
+      min-height: 48px;
+      border: 0;
+      border-radius: 11px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s, background .15s, opacity .15s;
+    }
+
+    button:hover, .open-link:hover { transform: translateY(-1px); }
+    button:focus-visible, .open-link:focus-visible {
+      outline: 3px solid rgba(89, 104, 223, .35);
+      outline-offset: 2px;
+    }
+
+    .submit {
+      width: 100%;
+      color: #fff;
+      background: #4d5bd4;
+    }
+
+    .submit:hover { background: #404dbf; }
+    .submit:disabled { cursor: wait; opacity: .7; }
+
+    .notice {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      padding: 13px 14px;
+      border: 1px solid #e8ebf2;
+      border-radius: 12px;
+      color: #727b90;
+      background: #fafbfe;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .notice strong { color: #515c75; }
+
+    .message {
+      min-height: 24px;
+      margin: 14px 0 0;
+      color: #a33a42;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .result {
+      margin-top: 22px;
+      padding: 20px;
+      border: 1px solid #d9e9e4;
+      border-radius: 15px;
+      background: #f4fbf8;
+    }
+
+    .result[hidden] { display: none; }
+    .result-label {
+      margin: 0 0 10px;
+      color: #64766f;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .short-url {
+      display: block;
+      overflow-wrap: anywhere;
+      color: #167655;
+      font-size: 20px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .short-url:hover { text-decoration: underline; }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    .copy {
+      padding: 0 18px;
+      color: #fff;
+      background: #238263;
+    }
+
+    .copy:hover { background: #1c7055; }
+
+    .open-link {
+      display: inline-grid;
+      place-items: center;
+      padding: 0 18px;
+      color: #47536b;
+      background: #e8eeeb;
+      text-decoration: none;
+    }
+
+    footer {
+      margin-top: 26px;
+      color: #9299a9;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      main { padding: 30px 22px; border-radius: 19px; }
+      .brand { margin-bottom: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">↗</span>LINK 短網址工具</div>
+    <h1>讓連結俐落一點</h1>
+    <p class="intro">貼上想分享的網址，立即建立簡潔好記的短連結。</p>
+
+    <form id="shorten-form">
+      <label for="url-input">你的原始網址</label>
+      <input
+        class="url-input"
+        id="url-input"
+        name="url"
+        type="text"
+        inputmode="url"
+        autocomplete="url"
+        placeholder="https://example.com/your/long/link"
+        required
+        aria-describedby="url-hint"
+      >
+      <p class="hint" id="url-hint">請輸入 http 或 https 網址；省略通訊協定時會自動補上 https://。</p>
+      <button class="submit" id="submit-button" type="submit">產生短網址</button>
+    </form>
+
+    <div class="notice">
+      <span aria-hidden="true">ⓘ</span>
+      <span><strong>隱私提醒：</strong>短網址由 is.gd 建立；產生連結時，原始網址會傳送至 is.gd。請勿縮短含有密碼、存取權杖或其他機密資訊的網址。</span>
+    </div>
+
+    <p class="message" id="message" role="status" aria-live="polite"></p>
+
+    <section class="result" id="result" aria-label="產生的短網址" hidden>
+      <p class="result-label">你的短網址已準備好</p>
+      <a class="short-url" id="short-url" target="_blank" rel="noopener noreferrer"></a>
+      <div class="result-actions">
+        <button class="copy" id="copy-button" type="button">複製連結</button>
+        <a class="open-link" id="open-link" target="_blank" rel="noopener noreferrer">開啟連結</a>
+      </div>
+    </section>
+
+    <footer>免費使用 · 無需註冊 · 由 is.gd 提供短網址服務</footer>
+  </main>
+
+  <script>
+    const form = document.querySelector("#shorten-form");
+    const input = document.querySelector("#url-input");
+    const submitButton = document.querySelector("#submit-button");
+    const message = document.querySelector("#message");
+    const result = document.querySelector("#result");
+    const shortUrlLink = document.querySelector("#short-url");
+    const openLink = document.querySelector("#open-link");
+    const copyButton = document.querySelector("#copy-button");
+
+    function normalizeUrl(value) {
+      const candidate = /^[a-z][a-z\d+.-]*:/i.test(value) ? value : `https://${value}`;
+      const url = new URL(candidate);
+      if (!["http:", "https:"].includes(url.protocol) || !url.hostname.includes(".")) {
+        throw new Error("請輸入有效的 http 或 https 網址。");
+      }
+      return url.href;
+    }
+
+    function requestShortUrl(originalUrl) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `isGdCallback${Date.now()}${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const timeoutId = window.setTimeout(() => {
+          finish();
+          reject(new Error("連線逾時，請稍後再試。"));
+        }, 15000);
+
+        function finish() {
+          window.clearTimeout(timeoutId);
+          script.remove();
+          delete window[callbackName];
+        }
+
+        window[callbackName] = (response) => {
+          finish();
+          if (response && typeof response.shorturl === "string") {
+            resolve(response.shorturl);
+            return;
+          }
+          reject(new Error(response?.errormessage || response?.error || "短網址服務無法處理這個網址，請稍後再試。"));
+        };
+
+        script.onerror = () => {
+          finish();
+          reject(new Error("無法連線至短網址服務，請檢查網路後再試。"));
+        };
+        const endpoint = new URL("https://is.gd/create.php");
+        endpoint.searchParams.set("format", "json");
+        endpoint.searchParams.set("callback", callbackName);
+        endpoint.searchParams.set("url", originalUrl);
+        script.src = endpoint.href;
+        document.head.append(script);
+      });
+    }
+
+    function validateShortUrl(value) {
+      const url = new URL(value);
+      if (url.protocol !== "https:" || !["is.gd", "www.is.gd"].includes(url.hostname)) {
+        throw new Error("短網址服務回傳了無效的連結。");
+      }
+      return url.href;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.textContent = "";
+      result.hidden = true;
+
+      let originalUrl;
+      try {
+        originalUrl = normalizeUrl(input.value.trim());
+      } catch {
+        message.textContent = "請輸入有效的 http 或 https 網址。";
+        input.focus();
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "正在建立…";
+      try {
+        const shortUrl = validateShortUrl(await requestShortUrl(originalUrl));
+        shortUrlLink.href = shortUrl;
+        shortUrlLink.textContent = shortUrl;
+        openLink.href = shortUrl;
+        result.hidden = false;
+        message.textContent = "短網址建立成功。";
+      } catch (error) {
+        message.textContent = error instanceof Error ? error.message : "發生未預期的錯誤，請稍後再試。";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "產生短網址";
+      }
+    });
+
+    copyButton.addEventListener("click", async () => {
+      const shortUrl = shortUrlLink.href;
+      try {
+        await navigator.clipboard.writeText(shortUrl);
+        message.textContent = "已複製短網址。";
+      } catch {
+        message.textContent = "無法自動複製，請點選短網址並手動複製。";
+      }
+    });
+  </script>
+</body>
+</html>
